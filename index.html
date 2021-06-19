@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>BlogSport - Vue3 JS</title>
+        <link rel="stylesheet" href="css/bootstrap.css">
+        <style>
+            .navbar{
+                background-color: black;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="blog-sport">
+            <nav class="navbar navbar-expand-lg navbar-dark fixed-top p-3">
+                <div class="container">
+                    <a href="" class="navbar-brand font-weight-bold">RC BLOG</a>
+                    <button class="navbar-toggler" data-toggle="collapse" data-target="#mobile">
+                        <span class="navbar-toggler-icon"></span>
+                    </button> 
+                   <div class="collapse navbar-collapse" id="mobile">
+                        <ul class="navbar-nav ml-auto">
+                            <blog-nav-item title="Home page" link=""></blog-nav-item>
+                            <blog-nav-item title="News" link=""></blog-nav-item>
+                            <blog-nav-item title="Business" link=""></blog-nav-item>
+                        </ul>
+                   </div>
+                </div>
+            </nav>
+            <div class="container">
+                <div class="row mb-5" style="margin-top: 10em;">
+                    <div class="col-md-4 col-0 ml-3">
+                        <blog-sidebar>
+                            <div class="row">
+                                <div class="col-12">
+                                    <h5>New Post</h5>
+                                    <h6>Title</h6>
+                                    <input v-model="postTitle" type="text" class="form-control form-control-sm mt-2 mb-2">
+                                    <h6>Content</h6>
+                                    <textarea v-model="postContent" name="" id="" cols="30" rows="10" class="form-control form-control-sm mt-2 mb-2"></textarea>
+                                    <button class="btn btn-info btn-sm w-50 mt-2" @click.prevent="registerPublish">Publish</button>
+                                </div>
+                            </div>
+                        </blog-sidebar>
+                    </div>
+                    <div class="col-12 col-md-7">     
+                        <div class="col-12">
+                            <blog-post
+                                v-for="post in posts"
+                                :title="post.title"
+                                :key="post.id"
+                                :content="post.content"
+                                :user="post.user"
+                                :link="post.link"
+                                @delete="deletePost(post.id)"
+                            ></blog-post>
+                        </div>    
+                    </div>
+                </div>
+            </div>
+            <footer class="p-5 text-light" style="background-color: black;">
+                <h6>Develop By: <span class="font-weight-bold">Ricardo Castelo</span></h6>
+            </footer>
+        </div>
+        <script src="./js/jquery.js"></script>
+        <script src="./js/bootstrap.js"></script>
+        <script src="vue3/vue.global.js"></script>
+        <script>
+            const BlogSport = {
+                data(){
+                    return{
+                        posts:[
+                            {
+                                id: 0, 
+                                title: 'What is the difference between VueJS and React Js ?', 
+                                user: 'Ricardo Castelo',
+                                content: 'Vue3 JS and React Difference.',
+                                link: 'what-is-the-difference-between-vuejs-and-react-js'
+                            },
+                            {
+                                id: 1, 
+                                title: 'Come to know the new world of programation', 
+                                user: 'Ricardo Castelo',
+                                content: 'Come to know the new world of programation Come to know the new world of programation Come to know the new world of programation',
+                                link: 'come-to-know-the-new-world-of-programation'
+                            },
+                        ],
+                        postTitle: '',
+                        postContent: ''
+                    }
+                },
+                methods: {
+                    registerPublish(){
+                        if(this.postTitle != '' && this.postContent != ''){
+                            this.posts.push(
+                            {
+                                id: this.posts.length +1, 
+                                title: this.postTitle, 
+                                content: this.postContent,
+                                user: 'Ricardo Castelo',
+                                link: this.postTitle.split(' ').join('-')
+                            })
+                            this.postContent = ''
+                            this.postTitle = ''
+                        }
+                    },
+                    deletePost(id){
+                        for(let i = this.posts.length; i--;){
+                            if(this.posts[i].id === id){
+                                this.posts.splice(i, 1)
+                            }
+                        }
+                    }
+                },
+            }
+            const app = Vue.createApp(BlogSport)
+            /*Navbar*/
+            app.component('blog-nav-item', {
+                props: ['title', 'link'],
+                template:
+                `
+                    <li class="nav-item"> 
+                        <a :href="link" class="nav-link font-weight-bold">{{ title }}</a>
+                    </li>
+                `
+            });
+            /*Posts*/
+            app.component('blog-post', {
+                props: ['title', 'content', 'link', 'user'],
+                emits: ['delete'],
+                template:
+                 `
+                    <div class="blog-post mb-5">
+                        <div class="card">
+                            <div class="card-body">
+                               <div class="d-flex flex-column">
+                                    <h4 class="card-title font-weight-bold"> 
+                                        <a class="text-dark" :href="link"> {{ title }} </a>
+                                    </h4>
+                                    <p class="font-weight-light"> {{ content }} </p>
+                                    <small class="mt-3"> By: {{ user }}. </small>
+                                </div>
+                            </div>
+                            <div class="card-header d-flex justify-content-between align-items-center" style="height:40px;">
+                                <a :href="link" style="font-size:1rem;" class="px-3 text-light bg-info"> Ver » </a>
+                                <a :href="link" style="font-size:1rem;" class="px-3 text-light bg-danger" @click.prevent="$emit('delete')"> Excluir » </a>
+                            </div>
+                        </div>
+                    </div>
+                `
+            });
+            /*SIDEBAR*/
+            app.component('blog-sidebar', {
+                template:
+                `
+                    <div class="card mb-5 mr-3">
+                        <div class="card-body">
+                            <h3 class="mb-4"> Blog Configuration </h3>
+                            <slot></slot>
+                        </div>
+                    </div>
+                `
+            });
+            const vm = app.mount('#blog-sport')
+        </script>
+    </body>
+</html>
