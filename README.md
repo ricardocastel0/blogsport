@@ -14,4 +14,5 @@ It's a simple blog where we can register and delete somes posts.
 - CSS3
 
 # Author
-Ricardo Castelo : Facebook: http://www.facebook.com/kepler.rgb
+Ricardo Castle : 
+### Facebook: https://www.facebook.com/rcastledev
